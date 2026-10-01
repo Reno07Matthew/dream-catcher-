@@ -1,0 +1,505 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes glow {
+    0%, 100% { text-shadow: 0 0 10px rgba(102, 126, 234, 0.5); }
+    50% { text-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
+}
+
+body {
+    font-family: "Roboto", sans-serif;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 30%;
+}
+
+header h1 {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+    animation: glow 3s ease-in-out infinite;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    opacity: 0.95;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+}
+
+.add-dream, .dreams-list {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 5px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    animation: fadeInUp 0.8s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+h2 {
+    color: #2d3748;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+#dreamForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.3s ease;
+    background: #f8fafb;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+button {
+    font-family: inherit;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+button:hover::before {
+    left: 100%;
+}
+
+button:active {
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.dream-card {
+    border: none;
+    border-radius: 1px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    /* border-left: 5px solid #667eea; */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    position: relative;
+}
+
+.dream-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    border-left-color: #764ba2;
+}
+
+.dream-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.dream-date {
+    color: #4a5568;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.delete-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 8px rgba(245, 87, 108, 0.3);
+}
+
+.delete-btn:hover {
+    box-shadow: 0 4px 12px rgba(245, 87, 108, 0.5);
+    transform: translateY(-2px);
+}
+
+.dream-text {
+    margin-bottom: 15px;
+    line-height: 1.7;
+    color: #1a202c;
+    font-weight: 500;
+}
+
+.interpretation {
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    padding: 15px;
+    border-radius: 8px;
+    /* border-left: 4px solid #667eea; */
+    border-right: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.interpretation h3 {
+    color: #667eea;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.interpretation-text {
+    color: #2d3748;
+    line-height: 1.7;
+    font-weight: 500;
+}
+
+.read-more-btn {
+    background: transparent;
+    color: #667eea;
+    border: none;
+    padding: 8px 15px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    box-shadow: none;
+    display: inline-block;
+    text-decoration: underline;
+}
+
+.read-more-btn:hover {
+    color: #764ba2;
+    transform: none;
+    text-decoration-thickness: 2px;
+}
+
+.read-more-btn:active {
+    transform: scale(0.98);
+}
+
+.loading, .empty {
+    text-align: center;
+    color: #718096;
+    padding: 40px;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.error {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    font-weight: 500;
+}
+
+#errorContainer {
+    margin-bottom: 20px;
+}
+
+.error-alert {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close-error {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 15px;
+    transition: opacity 0.2s ease;
+}
+
+.close-error:hover {
+    opacity: 0.8;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+
+    header {
+        margin-bottom: 30px;
+    }
+
+    header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 8px;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .add-dream, .dreams-list {
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+
+    #dreamForm {
+        gap: 12px;
+    }
+
+    textarea {
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+    }
+
+    button {
+        padding: 12px 24px;
+        font-size: 0.95rem;
+        border-radius: 8px;
+        width: 100%;
+    }
+
+    .dream-card {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+    }
+
+    .dream-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .dream-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .dream-date {
+        font-size: 0.85rem;
+    }
+
+    .delete-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        width: auto;
+        align-self: flex-start;
+    }
+
+    .dream-text {
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+    }
+
+    .interpretation {
+        padding: 12px;
+        border-radius: 6px;
+    }
+
+    .interpretation h3 {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .interpretation-text {
+        font-size: 0.95rem;
+    }
+
+    .read-more-btn {
+        font-size: 0.9rem;
+        margin-top: 8px;
+    }
+
+    .loading, .empty {
+        padding: 30px 15px;
+        font-size: 1rem;
+    }
+
+    .error-alert{
+        display: flex;
+        flex-direction: column;
+        gap: .5em;
+        text-align: center;
+    }
+}
+
+footer {
+    text-align: center;
+    color: white;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .add-dream, .dreams-list {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    h2 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+
+    textarea {
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 11px 20px;
+        font-size: 0.9rem;
+    }
+
+    .dream-card {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+
+    .dream-text {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+    .interpretation {
+        padding: 10px;
+        border-radius: 6px;
+    }
+
+    .interpretation h3 {
+        font-size: 0.9rem;
+    }
+
+    .interpretation-text {
+        font-size: 0.9rem;
+    }
+
+    .loading, .empty {
+        padding: 20px 10px;
+    }
+}
