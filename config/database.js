@@ -1,33 +1,34 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import pg from 'pg';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const { Pool } = pg;
 
-const dbPath = process.env.DATABASE_PATH || join(dirname(__dirname), 'dreams.db');
+let pool = null;
 
-let db = null;
+export function getPool() {
+  if (!pool) {
+    const connectionString = process.env.DATABASE_URL;
+
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+
+    pool = new Pool({
+      connectionString,
+      ssl: { rejectUnauthorized: false }
+    });
+  }
+  return pool;
+}
 
 export async function getDatabase() {
-  if (!db) {
-    db = await open({
-      filename: dbPath,
-      driver: sqlite3.Database
-    });
-    
-    // Enable foreign keys
-    await db.exec('PRAGMA foreign_keys = ON');
-  }
-  return db;
+  return getPool();
 }
 
 export async function closeDatabase() {
-  if (db) {
-    await db.close();
-    db = null;
+  if (pool) {
+    await pool.end();
+    pool = null;
   }
 }
 
-export default { getDatabase, closeDatabase };
+export default { getDatabase, getPool, closeDatabase };

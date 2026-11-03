@@ -2,9 +2,6 @@ import assert from 'node:assert';
 import http from 'node:http';
 import express from 'express';
 
-// Use an in-memory database for isolated, safe testing
-process.env.DATABASE_PATH = ':memory:';
-
 import { validateText } from './utils/validateText.js';
 import { getDatabase, closeDatabase } from './config/database.js';
 import { initDatabase } from './config/database-init.js';
@@ -69,27 +66,28 @@ async function runTests() {
   await test('initializes database table schema', async () => {
     await initDatabase();
     const db = await getDatabase();
-    const table = await db.get(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name='dreams'"
+    const result = await db.query(
+      "SELECT table_name FROM information_schema.tables WHERE table_name = 'dreams'"
     );
-    assert.ok(table, 'dreams table should exist');
+    assert.ok(result.rows.length > 0, 'dreams table should exist');
   });
 
   let testDreamId = null;
 
   await test('inserts a new dream record', async () => {
     const db = await getDatabase();
-    const result = await db.run(
-      'INSERT INTO dreams (dream_text, interpretation) VALUES (?, ?)',
+    const result = await db.query(
+      'INSERT INTO dreams (dream_text, interpretation) VALUES ($1, $2) RETURNING id',
       ['I was swimming in a glowing river', 'Water symbolizes emotion and renewal.']
     );
-    assert.ok(result.lastID > 0, 'Insert should produce a positive lastID');
-    testDreamId = result.lastID;
+    assert.ok(result.rows[0].id > 0, 'Insert should produce a positive id');
+    testDreamId = result.rows[0].id;
   });
 
   await test('fetches dream by ID', async () => {
     const db = await getDatabase();
-    const dream = await db.get('SELECT * FROM dreams WHERE id = ?', testDreamId);
+    const result = await db.query('SELECT * FROM dreams WHERE id = $1', [testDreamId]);
+    const dream = result.rows[0];
     assert.ok(dream);
     assert.strictEqual(dream.dream_text, 'I was swimming in a glowing river');
     assert.strictEqual(dream.interpretation, 'Water symbolizes emotion and renewal.');
@@ -97,18 +95,18 @@ async function runTests() {
 
   await test('fetches list of all dreams', async () => {
     const db = await getDatabase();
-    const list = await db.all('SELECT * FROM dreams ORDER BY created_at DESC');
-    assert.ok(Array.isArray(list));
-    assert.ok(list.length >= 1);
+    const result = await db.query('SELECT * FROM dreams ORDER BY created_at DESC');
+    assert.ok(Array.isArray(result.rows));
+    assert.ok(result.rows.length >= 1);
   });
 
   await test('deletes a dream by ID', async () => {
     const db = await getDatabase();
-    const result = await db.run('DELETE FROM dreams WHERE id = ?', testDreamId);
-    assert.strictEqual(result.changes, 1);
+    const result = await db.query('DELETE FROM dreams WHERE id = $1', [testDreamId]);
+    assert.strictEqual(result.rowCount, 1);
 
-    const deleted = await db.get('SELECT * FROM dreams WHERE id = ?', testDreamId);
-    assert.strictEqual(deleted, undefined);
+    const deleted = await db.query('SELECT * FROM dreams WHERE id = $1', [testDreamId]);
+    assert.strictEqual(deleted.rows.length, 0);
   });
 
   // ==========================================

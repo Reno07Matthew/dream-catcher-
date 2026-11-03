@@ -1,6 +1,6 @@
 import express from 'express';
 import { getDatabase } from '../config/database.js';
-import { getDreamInterpretation } from '../utils/ai-gemini.js'; // or '../utils/ai-gemini.js' if using Gemini
+import { getDreamInterpretation } from '../utils/ai-gemini.js';
 import { validateText } from '../utils/validateText.js'
 
 const router = express.Router();
@@ -9,8 +9,8 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const db = await getDatabase();
-    const result = await db.all('SELECT * FROM dreams ORDER BY created_at DESC');
-    res.json(result);
+    const result = await db.query('SELECT * FROM dreams ORDER BY created_at DESC');
+    res.json(result.rows);
   } catch (error) {
     console.error('Error fetching dreams:', error);
     res.status(500).json({ error: 'Failed to fetch dreams' });
@@ -21,12 +21,12 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const db = await getDatabase();
-    const result = await db.get('SELECT * FROM dreams WHERE id = ?', req.params.id);
+    const result = await db.query('SELECT * FROM dreams WHERE id = $1', [req.params.id]);
     
-    if (!result) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Dream not found' });
     }
-    res.json(result);
+    res.json(result.rows[0]);
   } catch (error) {
     console.error('Error fetching dream:', error);
     res.status(500).json({ error: 'Failed to fetch dream' });
@@ -58,15 +58,12 @@ router.post('/', async (req, res) => {
     
     // Insert into database and return the created dream
     const db = await getDatabase();
-    const result = await db.run(
-      'INSERT INTO dreams (dream_text, interpretation) VALUES (?, ?)',
+    const result = await db.query(
+      'INSERT INTO dreams (dream_text, interpretation) VALUES ($1, $2) RETURNING *',
       [validation.value, interpretation]
     );
     
-    // Fetch the inserted record
-    const dream = await db.get('SELECT * FROM dreams WHERE id = ?', result.lastID);
-    
-    res.status(201).json(dream);
+    res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Error creating dream:', error);
     console.error('Error details:', error.message, error.stack);
@@ -78,9 +75,9 @@ router.post('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const db = await getDatabase();
-    const result = await db.run('DELETE FROM dreams WHERE id = ?', req.params.id);
+    const result = await db.query('DELETE FROM dreams WHERE id = $1', [req.params.id]);
     
-    if (result.changes === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Dream not found' });
     }
     

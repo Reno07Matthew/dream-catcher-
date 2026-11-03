@@ -1,9 +1,15 @@
+databases:
+  - name: dream-catcher-db
+    plan: free
+    databaseName: dreamcatcher
+    user: dreamcatcher
+
 services:
   - type: web
     name: dream-catcher
     runtime: node
     plan: free
-    buildCommand: npm install && npm rebuild sqlite3 --build-from-source
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_VERSION
@@ -11,4 +17,10 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
-        value: gemini-3.8-flash
+        value: gemini-3.6-flash
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dream-catcher-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
