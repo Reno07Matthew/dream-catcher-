@@ -31,4 +31,12 @@ export async function closeDatabase() {
   }
 }
 
-export default { getDatabase, getPool, closeDatabase };
+const db = {
+  query: (...args) => getPool().query(...args),
+  end: () => closeDatabase(),
+  getDatabase,
+  getPool,
+  closeDatabase
+};
+
+export default db;
